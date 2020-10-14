@@ -5,7 +5,7 @@
 
 ## Installing
 
-install python 3.8 (or later)
-pip/3 install yfinance
-pip/3 install pandas_datareader
-pip/3 install datetime
+#### install python 3.8 (or later)
+#### pip/3 install yfinance
+#### pip/3 install pandas_datareader
+#### pip/3 install datetime
