@@ -12,15 +12,17 @@ import sys
 # Finding stock and prices
 yf.pdr_override()
 
-stock = input("Enter a stock ticker symbol: ")
+stock = input("(1) Enter a stock ticker symbol: ")
+start_date_input = int(input("(2) Enter time (number) in months to start with: "))
+ma_input = int(input("(3) Enter moving average (number): "))
 
 now = datetime.datetime.now()
 
-startdate = datetime.datetime.today() + relativedelta(months=-6)
+startdate = datetime.datetime.today() + relativedelta(months=-start_date_input)
 
 df = pdr.get_data_yahoo(stock, startdate, now)
 
-ma = 50
+ma = ma_input
 
 smaString = "Sma_" + str(ma)
 
@@ -50,7 +52,7 @@ today_stock = pdr.get_data_yahoo(stock, now, now)
 numb = [math.trunc(today_stock["High"][i]) for i in today_stock.index]
 
 sum_numb = sum(numb)
-print(f"Current {stock}'s price is: {sum_numb}")
+print(f"Current {stock}'s price per share is: {sum_numb}")
 
 if sum_numb < average:
     print('I suggest you to buy this stock!\n')
