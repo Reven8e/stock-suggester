@@ -9,3 +9,5 @@
 ##### pip/3 install yfinance
 ##### pip/3 install pandas_datareader
 ##### pip/3 install datetime
+##### pip/3 install bs4
+##### pip/3 install BeautifulSoup4
