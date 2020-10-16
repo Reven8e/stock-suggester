@@ -1,6 +1,7 @@
 # stock-suggester
 
-### This script calculating the average of the stock u chose, then comparing the current price to the average price.
+### -This script calculating the average of the stock u chose, then comparing the current price to the average price.
+### -This script can also scrape stocks from yahoo finance's webiste and check them if they worth buying.
 
 
 ## Installing
