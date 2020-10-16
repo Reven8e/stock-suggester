@@ -5,57 +5,134 @@ import datetime
 from dateutil.relativedelta import relativedelta
 
 import math
-
 import sys
 
+import requests
+from bs4 import BeautifulSoup
 
-# Finding stock and prices
-yf.pdr_override()
+options = input('(i) Do you want me to scrape stocks from yahoo? (yes/no): ')
 
-stock = input("(1) Enter a stock ticker symbol: ")
-start_date_input = int(input("(2) Enter time (number) in months to start with: "))
-ma_input = int(input("(3) Enter moving average (number): "))
+if options == 'yes':
 
-now = datetime.datetime.now()
+    url = 'https://finance.yahoo.com/most-active/'
 
-startdate = datetime.datetime.today() + relativedelta(months=-start_date_input)
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'lxml')
 
-df = pdr.get_data_yahoo(stock, startdate, now)
-
-ma = ma_input
-
-smaString = "Sma_" + str(ma)
-
-df[smaString] = df.iloc[:, 4].rolling(window=ma).mean()
-
-df = df.iloc[ma:]
-
-# Checking stock prices average
-try:
-    prices = [math.trunc(df["Close"][i]) for i in df.index]
-    total = sum(prices)
-
-    amount = len([Int for Int in prices if isinstance(Int, int)])
-
-    average = total / amount
-
-    print(f'The average is: {math.trunc(average)}')
-
-except ZeroDivisionError:
-    print('Stock not found!')
-    sys.exit(0)
+    table = soup.find_all("div", {"id": "Lead-5-ScreenerResults-Proxy"})
 
 
-# Checking if you should buy the stock.
-today_stock = pdr.get_data_yahoo(stock, now, now)
+    td1 = table[0].find_all("td", {"aria-label":"Symbol"})
 
-numb = [math.trunc(today_stock["High"][i]) for i in today_stock.index]
+    start_date_input = int(input("(1) Enter time (number) in months to start with: "))
+    ma_input = int(input("(2) Enter moving average (number): "))
 
-sum_numb = sum(numb)
-print(f"Current {stock}'s price per share is: {sum_numb}")
+    a = td1[0].find_all("a", {"class":"Fw(600) C($linkColor)"})
 
-if sum_numb < average:
-    print('I suggest you to buy this stock!\n')
+    for a in td1:
 
-elif sum_numb > average:
-    print('I suggest you to NOT buy this stock.')
+        # Finding stock and prices
+        yf.pdr_override()
+
+        stock = [a.text]
+        now = datetime.datetime.now()
+
+        startdate = datetime.datetime.today() + relativedelta(months=-start_date_input)
+
+        df = pdr.get_data_yahoo(stock, startdate, now)
+
+        ma = ma_input
+
+        smaString = "Sma_" + str(ma)
+
+        df[smaString] = df.iloc[:, 4].rolling(window=ma).mean()
+
+        df = df.iloc[ma:]
+
+        # Checking stock prices average
+        try:
+            prices = [math.trunc(df["Close"][i]) for i in df.index]
+            total = sum(prices)
+
+            amount = len([Int for Int in prices if isinstance(Int, int)])
+
+            average = total / amount
+
+            # print(f'The average is: {math.trunc(average)}')
+
+        except ZeroDivisionError:
+            print('Stock not found!')
+            sys.exit(0)
+
+
+        # Checking if you should buy the stock.
+        today_stock = pdr.get_data_yahoo(stock, now, now)
+
+        numb = [math.trunc(today_stock["High"][i]) for i in today_stock.index]
+
+        sum_numb = sum(numb)
+        # print(f"Current {stock}'s price per share is: {sum_numb}")
+
+        if sum_numb < average:
+            print(f'{stock}I suggest you to buy this stock!')
+            abcdeh = f'I suggest you to buy {stock}\n'
+            with open('stocks.text', 'a') as f:
+                f.write(abcdeh)
+
+        elif sum_numb > average:
+            print('')
+
+
+elif options == 'no':
+
+    yf.pdr_override()
+
+    stock = input("(1) Enter a stock ticker symbol: ")
+    start_date_input = int(input("(2) Enter time (number) in months to start with: "))
+    ma_input = int(input("(3) Enter moving average (number): "))
+
+    now = datetime.datetime.now()
+
+    startdate = datetime.datetime.today() + relativedelta(months=-start_date_input)
+
+    df = pdr.get_data_yahoo(stock, startdate, now)
+
+    ma = ma_input
+
+    smaString = "Sma_" + str(ma)
+
+    df[smaString] = df.iloc[:, 4].rolling(window=ma).mean()
+
+    df = df.iloc[ma:]
+
+    # Checking stock prices average
+    try:
+        prices = [math.trunc(df["Close"][i]) for i in df.index]
+        total = sum(prices)
+
+        amount = len([Int for Int in prices if isinstance(Int, int)])
+
+        average = total / amount
+
+        print(f'The average is: {math.trunc(average)}')
+
+    except ZeroDivisionError:
+        print('Stock not found!')
+        sys.exit(0)
+
+    # Checking if you should buy the stock.
+    today_stock = pdr.get_data_yahoo(stock, now, now)
+
+    numb = [math.trunc(today_stock["High"][i]) for i in today_stock.index]
+
+    sum_numb = sum(numb)
+    print(f"Current {stock}'s price per share is: {sum_numb}")
+
+    if sum_numb < average:
+        print(f'I suggest you to buy {stock}')
+
+    elif sum_numb > average:
+        print(f'I suggest you to not buy {stock}')
+
+else:
+    print("Please type 'yes' or 'no' ")
