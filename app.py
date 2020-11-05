@@ -1,4 +1,4 @@
-# © Stock Suggester- Made by Yuval Simon. For bogan.cool
+# © Stock Suggester- Made by Yuval Simon. For www.bogan.cool
 
 import yfinance as yf
 from pandas_datareader import data as pdr
